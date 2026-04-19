@@ -2,21 +2,17 @@ const express = require("express");
 const cors = require("cors");
 
 const app = express();
-app.use(cors());
+
+app.use(cors({
+  origin: "*"
+}));
+
 app.use(express.json());
 
-// “banco fake” por enquanto
+// fake DB
 const users = [
-  {
-    username: "admin",
-    password: "123",
-    role: "admin"
-  },
-  {
-    username: "player",
-    password: "123",
-    role: "member"
-  }
+  { username: "admin", password: "123", role: "admin" },
+  { username: "player", password: "123", role: "member" }
 ];
 
 // LOGIN
@@ -31,7 +27,6 @@ app.post("/login", (req, res) => {
     return res.status(401).json({ error: "login inválido" });
   }
 
-  // token simples (depois a gente melhora com JWT)
   const token = `${user.username}-token-foxlt`;
 
   res.json({
@@ -40,7 +35,7 @@ app.post("/login", (req, res) => {
   });
 });
 
-// CHECAR TOKEN
+// VERIFY
 app.post("/verify", (req, res) => {
   const { token } = req.body;
 
@@ -48,11 +43,11 @@ app.post("/verify", (req, res) => {
     return res.status(401).json({ valid: false });
   }
 
-  res.json({
-    valid: true
-  });
+  res.json({ valid: true });
 });
 
-app.listen(3000, () => {
-  console.log("Fox LT backend rodando 🚀");
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log("Fox LT backend rodando 🚀 na porta " + PORT);
 });
