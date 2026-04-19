@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Fox LT Login</title>
+</head>
+<body>
+
+<h1>Login MBS</h1>
+
+<input id="user" placeholder="usuário">
+<input id="pass" placeholder="senha" type="password">
+<button onclick="login()">Entrar</button>
+
+<script>
+async function login() {
+  const username = document.getElementById("user").value;
+  const password = document.getElementById("pass").value;
+
+  const res = await fetch("http://localhost:3000/login", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ username, password })
+  });
+
+  const data = await res.json();
+
+  if (data.token) {
+    localStorage.setItem("token", data.token);
+
+    window.location.href = "/home";
+  } else {
+    alert("login inválido");
+  }
+}
+</script>
+
+</body>
+</html>
