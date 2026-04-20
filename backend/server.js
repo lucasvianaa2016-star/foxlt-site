@@ -23,7 +23,7 @@ const supabase = createClient(
   process.env.SUPABASE_KEY
 );
 
-const JWT_SECRET = process.env.JWT_SECRET || "FOX_LT_SECRET";
+const JWT_SECRET = process.env.JWT_SECRET || "FOXLT_HIPER_SECRETO";
 
 // =======================
 // REGISTER
