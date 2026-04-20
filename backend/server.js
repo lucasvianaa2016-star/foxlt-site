@@ -7,7 +7,11 @@ const { createClient } = require("@supabase/supabase-js");
 const app = express();
 
 app.use(cors({
-  origin: true,
+  origin: [
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
+    "https://foxlt-site.vercel.app"
+  ],
   credentials: true
 }));
 
@@ -19,78 +23,187 @@ const supabase = createClient(
   process.env.SUPABASE_KEY
 );
 
-// 🔐 LOGIN (COM SESSÃO REAL)
-app.post("/login", async (req, res) => {
-  const { username, password } = req.body;
+const JWT_SECRET = process.env.JWT_SECRET || "FOX_LT_SECRET";
 
-  const { data } = await supabase
-    .from("users")
-    .select("*")
-    .eq("username", username)
-    .eq("password", password)
-    .single();
+// =======================
+// REGISTER
+// =======================
+app.post("/register", async (req, res) => {
+  try {
+    const { username, password } = req.body;
 
-  if (!data) {
-    return res.status(401).json({ error: "login inválido" });
+    if (!username || !password) {
+      return res.status(400).json({
+        error: "Preencha usuário e senha"
+      });
+    }
+
+    const { data: existingUser } = await supabase
+      .from("users")
+      .select("id")
+      .eq("username", username)
+      .single();
+
+    if (existingUser) {
+      return res.status(400).json({
+        error: "Usuário já existe"
+      });
+    }
+
+    const { error } = await supabase
+      .from("users")
+      .insert([
+        {
+          username,
+          password,
+          role: "member"
+        }
+      ]);
+
+    if (error) {
+      return res.status(400).json({
+        error: error.message
+      });
+    }
+
+    res.json({
+      ok: true,
+      message: "Conta criada com sucesso"
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      error: "Erro interno no register"
+    });
   }
-
-  const token = jwt.sign(
-    { id: data.id, role: data.role },
-    "FOX_LT_SECRET",
-    { expiresIn: "1h" }
-  );
-
-  res.cookie("session", token, {
-    httpOnly: true,
-    secure: false,
-    sameSite: "lax"
-  });
-
-  res.json({ ok: true, role: data.role });
 });
 
-// 🧠 AUTH MIDDLEWARE
+// =======================
+// LOGIN
+// =======================
+app.post("/login", async (req, res) => {
+  try {
+    const { username, password } = req.body;
+
+    const { data } = await supabase
+      .from("users")
+      .select("*")
+      .eq("username", username)
+      .eq("password", password)
+      .single();
+
+    if (!data) {
+      return res.status(401).json({
+        error: "Login inválido"
+      });
+    }
+
+    const token = jwt.sign(
+      {
+        id: data.id,
+        username: data.username,
+        role: data.role
+      },
+      JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    res.cookie("session", token, {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      maxAge: 86400000
+    });
+
+    res.json({
+      ok: true,
+      role: data.role
+    });
+
+  } catch (err) {
+    res.status(500).json({
+      error: "Erro interno no login"
+    });
+  }
+});
+
+// =======================
+// MIDDLEWARE AUTH
+// =======================
 function auth(req, res, next) {
   const token = req.cookies.session;
 
   if (!token) {
-    return res.status(401).json({ error: "sem sessão" });
+    return res.status(401).json({
+      error: "Sem sessão"
+    });
   }
 
   try {
-    const user = jwt.verify(token, "FOX_LT_SECRET");
-    req.user = user;
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = decoded;
     next();
   } catch {
-    return res.status(401).json({ error: "sessão inválida" });
+    return res.status(401).json({
+      error: "Sessão inválida"
+    });
   }
 }
 
-// REGISTER
-app.post("/register", async (req, res) => {
-  const { username, password } = req.body;
-
-  const { error } = await supabase
-    .from("users")
-    .insert([{ username, password, role: "member" }]);
-
-  if (error) return res.status(400).json(error);
-
-  res.json({ ok: true });
-});
-
-// 🔒 ADMIN PROTEGIDO
-app.get("/admin/users", auth, async (req, res) => {
-  const { data } = await supabase.from("users").select("*");
-  res.json(data);
-});
-
-// 🔒 TESTE DASHBOARD PROTEGIDO
+// =======================
+// DASHBOARD
+// =======================
 app.get("/dashboard-data", auth, (req, res) => {
   res.json({
-    msg: "logado com sessão real",
+    ok: true,
     user: req.user
   });
 });
 
-app.listen(3000);
+// =======================
+// ADMIN USERS
+// =======================
+app.get("/admin/users", auth, async (req, res) => {
+  if (req.user.role !== "admin") {
+    return res.status(403).json({
+      error: "Acesso negado"
+    });
+  }
+
+  const { data } = await supabase
+    .from("users")
+    .select("id, username, role, created_at");
+
+  res.json(data);
+});
+
+// =======================
+// LOGOUT
+// =======================
+app.post("/logout", (req, res) => {
+  res.clearCookie("session", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none"
+  });
+
+  res.json({
+    ok: true
+  });
+});
+
+// =======================
+// ROOT TESTE
+// =======================
+app.get("/", (req, res) => {
+  res.send("Fox LT Backend Online 🚀");
+});
+
+// =======================
+// START SERVER
+// =======================
+const PORT = process.env.PORT || 3000;
+
+app.listen(PORT, () => {
+  console.log("Servidor rodando na porta " + PORT);
+});
