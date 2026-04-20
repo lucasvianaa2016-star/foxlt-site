@@ -1,17 +1,82 @@
-const role = localStorage.getItem("role");
-const token = localStorage.getItem("token");
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Auth Fox LT</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
 
-if (!token) {
-  window.location.href = "/auth/";
+<div class="container">
+
+  <h1 id="title">Login</h1>
+
+  <input id="user" placeholder="usuário">
+  <input id="pass" type="password" placeholder="senha">
+
+  <button onclick="handleAuth()" id="btn">Entrar</button>
+
+  <a href="#" onclick="toggleMode()">Criar conta</a>
+
+</div>
+
+<script>
+let mode = "login";
+
+function toggleMode() {
+  mode = mode === "login" ? "register" : "login";
+
+  document.getElementById("title").innerText =
+    mode === "login" ? "Login" : "Criar conta";
+
+  document.getElementById("btn").innerText =
+    mode === "login" ? "Entrar" : "Registrar";
 }
 
-document.getElementById("roleText").innerText = role;
+async function handleAuth() {
+  try {
+    const username = document.getElementById("user").value.trim();
+    const password = document.getElementById("pass").value.trim();
 
-if (role === "admin") {
-  document.getElementById("adminPanel").style.display = "block";
-}
+    if (!username || !password) {
+      alert("Preencha tudo");
+      return;
+    }
 
-function logout() {
-  localStorage.clear();
-  window.location.href = "/auth/";
+    const url = mode === "login"
+      ? "https://foxlt-site.onrender.com/login"
+      : "https://foxlt-site.onrender.com/register";
+
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      credentials: "include",
+      body: JSON.stringify({ username, password })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      alert(data.error || "Erro");
+      return;
+    }
+
+    if (mode === "login") {
+      window.location.href =
+        data.role === "admin" ? "/adminlg/" : "/dashboard/";
+    } else {
+      alert("Conta criada");
+      toggleMode();
+    }
+
+  } catch (error) {
+    console.log(error);
+    alert("Erro de conexão");
+  }
 }
+</script>
+
+</body>
+</html>
