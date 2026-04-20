@@ -1,60 +1,32 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<title>Fox LT</title>
+</head>
+<body>
+
+<h1 id="title">Login</h1>
+
+<input id="user" placeholder="usuário">
+<input id="pass" type="password" placeholder="senha">
+
+<button onclick="handleAuth()" id="btn">Entrar</button>
+<a href="#" onclick="toggleMode()">Criar conta</a>
+
 <script>
 let mode = "login";
 
 function toggleMode() {
   mode = mode === "login" ? "register" : "login";
-
   document.getElementById("title").innerText =
     mode === "login" ? "Login" : "Criar conta";
-
-  document.getElementById("btn").innerText =
-    mode === "login" ? "Entrar" : "Registrar";
 }
 
-async function handleAuth() {
-  try {
-    const username = document.getElementById("user").value.trim();
-    const password = document.getElementById("pass").value.trim();
-
-    if (!username || !password) {
-      alert("Preencha tudo");
-      return;
-    }
-
-    const url = mode === "login"
-      ? "https://foxlt-site.onrender.com/login"
-      : "https://foxlt-site.onrender.com/register";
-
-    const res = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      credentials: "include",
-      body: JSON.stringify({ username, password })
-    });
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      alert(data.error || "Erro");
-      return;
-    }
-
-    if (mode === "login") {
-      if (data.role === "admin") {
-        window.location.href = "/adminlg/";
-      } else {
-        window.location.href = "/dashboard/";
-      }
-    } else {
-      alert("Conta criada com sucesso");
-      toggleMode();
-    }
-
-  } catch (error) {
-    console.log(error);
-    alert("Erro de conexão");
-  }
+function handleAuth() {
+  alert("funcionando");
 }
 </script>
+
+</body>
+</html>
