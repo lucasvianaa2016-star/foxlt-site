@@ -5,20 +5,26 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// banco temporário
-const users = [];
+// banco simples
+const users = [
+  {
+    username: "admin",
+    password: "123",
+    role: "admin"
+  }
+];
 
-// CADASTRO
+// REGISTER (member direto)
 app.post("/register", (req, res) => {
   const { username, password } = req.body;
 
   const exists = users.find(u => u.username === username);
-  if (exists) return res.status(400).json({ error: "usuário já existe" });
+  if (exists) return res.status(400).json({ error: "já existe" });
 
   users.push({
     username,
     password,
-    role: "pending" // 🔥 novo usuário começa como pendente
+    role: "member"
   });
 
   res.json({ ok: true });
@@ -36,27 +42,25 @@ app.post("/login", (req, res) => {
     return res.status(401).json({ error: "login inválido" });
   }
 
-  if (user.role === "pending") {
-    return res.status(403).json({ error: "aguardando aprovação admin" });
-  }
-
-  const token = `${user.username}-token`;
-
-  res.json({ token, role: user.role });
+  res.json({
+    token: `${user.username}-token`,
+    role: user.role
+  });
 });
 
-// ADMIN APROVA USUÁRIO (temporário)
-app.post("/approve", (req, res) => {
-  const { username } = req.body;
+// criar admin manual (só você usa isso)
+app.post("/create-admin", (req, res) => {
+  const { username, password } = req.body;
 
-  const user = users.find(u => u.username === username);
-  if (!user) return res.status(404).json({ error: "não existe" });
-
-  user.role = "member";
+  users.push({
+    username,
+    password,
+    role: "admin"
+  });
 
   res.json({ ok: true });
 });
 
 app.listen(3000, () => {
-  console.log("API rodando");
+  console.log("Fox LT backend rodando 🚀");
 });
