@@ -2,18 +2,27 @@ const express = require("express");
 const cors = require("cors");
 
 const app = express();
-
-app.use(cors({
-  origin: "*"
-}));
-
+app.use(cors());
 app.use(express.json());
 
-// fake DB
-const users = [
-  { username: "admin", password: "123", role: "admin" },
-  { username: "player", password: "123", role: "member" }
-];
+// banco temporário
+const users = [];
+
+// CADASTRO
+app.post("/register", (req, res) => {
+  const { username, password } = req.body;
+
+  const exists = users.find(u => u.username === username);
+  if (exists) return res.status(400).json({ error: "usuário já existe" });
+
+  users.push({
+    username,
+    password,
+    role: "pending" // 🔥 novo usuário começa como pendente
+  });
+
+  res.json({ ok: true });
+});
 
 // LOGIN
 app.post("/login", (req, res) => {
@@ -27,27 +36,27 @@ app.post("/login", (req, res) => {
     return res.status(401).json({ error: "login inválido" });
   }
 
-  const token = `${user.username}-token-foxlt`;
-
-  res.json({
-    token,
-    role: user.role
-  });
-});
-
-// VERIFY
-app.post("/verify", (req, res) => {
-  const { token } = req.body;
-
-  if (!token) {
-    return res.status(401).json({ valid: false });
+  if (user.role === "pending") {
+    return res.status(403).json({ error: "aguardando aprovação admin" });
   }
 
-  res.json({ valid: true });
+  const token = `${user.username}-token`;
+
+  res.json({ token, role: user.role });
 });
 
-const PORT = process.env.PORT || 3000;
+// ADMIN APROVA USUÁRIO (temporário)
+app.post("/approve", (req, res) => {
+  const { username } = req.body;
 
-app.listen(PORT, () => {
-  console.log("Fox LT backend rodando 🚀 na porta " + PORT);
+  const user = users.find(u => u.username === username);
+  if (!user) return res.status(404).json({ error: "não existe" });
+
+  user.role = "member";
+
+  res.json({ ok: true });
+});
+
+app.listen(3000, () => {
+  console.log("API rodando");
 });
