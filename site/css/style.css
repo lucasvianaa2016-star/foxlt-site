@@ -3,42 +3,48 @@ body {
   font-family: Arial, sans-serif;
   background: #0f172a;
   color: #e2e8f0;
+
+  /* centro perfeito */
+  height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 100vh;
 }
 
 .container {
+  width: 320px;
   background: #1e293b;
   padding: 30px;
   border-radius: 12px;
-  width: 320px;
+
+  /* garante alinhamento interno */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+
   box-shadow: 0 10px 30px rgba(0,0,0,0.5);
 }
 
 h1 {
-  text-align: center;
-  margin-bottom: 20px;
+  margin: 0 0 10px 0;
 }
 
 input {
   width: 100%;
   padding: 10px;
-  margin: 8px 0;
-  border: none;
   border-radius: 8px;
+  border: none;
   outline: none;
 }
 
 button {
   width: 100%;
   padding: 10px;
-  margin-top: 10px;
-  background: #3b82f6;
-  border: none;
-  color: white;
   border-radius: 8px;
+  border: none;
+  background: #3b82f6;
+  color: white;
   cursor: pointer;
 }
 
@@ -47,10 +53,7 @@ button:hover {
 }
 
 a {
+  font-size: 12px;
   color: #60a5fa;
   text-decoration: none;
-  font-size: 12px;
-  display: block;
-  text-align: center;
-  margin-top: 10px;
 }
