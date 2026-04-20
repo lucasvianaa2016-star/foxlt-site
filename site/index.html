@@ -1,19 +1,68 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-br">
 <head>
-  <link rel="stylesheet" href="css/style.css">
+  <meta charset="UTF-8">
+  <title>Fox LT Auth</title>
+  <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
 
 <div class="container">
-  <h2>Fox LT Login</h2>
+
+  <h1 id="title">Login</h1>
 
   <input id="user" placeholder="usuário">
   <input id="pass" type="password" placeholder="senha">
 
-  <button onclick="login()">Entrar</button>
+  <button onclick="handleAuth()" id="btn">Entrar</button>
+
+  <a href="#" onclick="toggleMode()">Criar conta</a>
+
 </div>
 
-<script src="js/main.js"></script>
+<script>
+let mode = "login";
+
+function toggleMode() {
+  mode = mode === "login" ? "register" : "login";
+
+  title.innerText = mode === "login" ? "Login" : "Criar conta";
+  btn.innerText = mode === "login" ? "Entrar" : "Registrar";
+}
+
+async function handleAuth() {
+  const username = user.value;
+  const password = pass.value;
+
+  const url = mode === "login"
+    ? "https://SEU-RENDER/login"
+    : "https://SEU-RENDER/register";
+
+  const res = await fetch(url, {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ username, password })
+  });
+
+  const data = await res.json();
+
+  if (!res.ok) {
+    alert("erro");
+    return;
+  }
+
+  if (mode === "login") {
+    localStorage.setItem("role", data.role);
+    localStorage.setItem("token", data.token);
+
+    window.location.href =
+      data.role === "admin" ? "/adminlg" : "/dashboard";
+  } else {
+    alert("conta criada");
+    toggleMode();
+  }
+}
+</script>
+
 </body>
 </html>

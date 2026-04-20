@@ -45,17 +45,10 @@ app.post("/register", async (req, res) => {
   res.json({ ok: true });
 });
 
-// CRIAR ADMIN (só você usa)
-app.post("/create-admin", async (req, res) => {
-  const { username, password } = req.body;
-
-  await supabase
-    .from("users")
-    .insert([{ username, password, role: "admin" }]);
-
-  res.json({ ok: true });
+// ADMIN LIST
+app.get("/admin/users", async (req, res) => {
+  const { data } = await supabase.from("users").select("*");
+  res.json(data);
 });
 
-app.listen(3000, () => {
-  console.log("backend ok");
-});
+app.listen(3000);
