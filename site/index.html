@@ -1,25 +1,3 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-  <meta charset="UTF-8">
-  <title>Auth Fox LT</title>
-  <link rel="stylesheet" href="../css/style.css">
-</head>
-<body>
-
-<div class="container">
-
-  <h1 id="title">Login</h1>
-
-  <input id="user" placeholder="usuário">
-  <input id="pass" type="password" placeholder="senha">
-
-  <button onclick="handleAuth()" id="btn">Entrar</button>
-
-  <a href="#" onclick="toggleMode()">Criar conta</a>
-
-</div>
-
 <script>
 let mode = "login";
 
@@ -34,36 +12,49 @@ function toggleMode() {
 }
 
 async function handleAuth() {
-  const username = user.value;
-  const password = pass.value;
+  try {
+    const username = document.getElementById("user").value.trim();
+    const password = document.getElementById("pass").value.trim();
 
-  const url = mode === "login"
-    ? "https://SEU-RENDER/login"
-    : "https://SEU-RENDER/register";
+    if (!username || !password) {
+      alert("Preencha tudo");
+      return;
+    }
 
-  const res = await fetch(url, {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({ username, password })
-  });
+    const url = mode === "login"
+      ? "https://foxlt-site.onrender.com/login"
+      : "https://foxlt-site.onrender.com/register";
 
-  const data = await res.json();
+    const res = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      credentials: "include",
+      body: JSON.stringify({ username, password })
+    });
 
-  if (!res.ok) {
-    alert("erro");
-    return;
-  }
+    const data = await res.json();
 
-  if (mode === "login") {
-    localStorage.setItem("role", data.role);
-    window.location.href =
-      data.role === "admin" ? "/adminlg" : "/dashboard";
-  } else {
-    alert("conta criada");
-    toggleMode();
+    if (!res.ok) {
+      alert(data.error || "Erro");
+      return;
+    }
+
+    if (mode === "login") {
+      if (data.role === "admin") {
+        window.location.href = "/adminlg/";
+      } else {
+        window.location.href = "/dashboard/";
+      }
+    } else {
+      alert("Conta criada com sucesso");
+      toggleMode();
+    }
+
+  } catch (error) {
+    console.log(error);
+    alert("Erro de conexão");
   }
 }
 </script>
-
-</body>
-</html>
