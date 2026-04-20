@@ -7,7 +7,7 @@ async function handleAuth() {
     return;
   }
 
-  const res = await fetch("https://SEU-RENDER.onrender.com/register", {
+  const res = await fetch("https://foxlt-site.onrender.com/register", {
     method: "POST",
     headers: {
       "Content-Type": "application/json"
