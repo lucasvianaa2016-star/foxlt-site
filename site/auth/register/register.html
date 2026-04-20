@@ -1,0 +1,18 @@
+<input id="user">
+<input id="pass">
+<button onclick="register()">criar conta</button>
+
+<script>
+async function register() {
+  await fetch("https://SEU-RENDER/register", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({
+      username: user.value,
+      password: pass.value
+    })
+  });
+
+  alert("conta criada");
+}
+</script>
