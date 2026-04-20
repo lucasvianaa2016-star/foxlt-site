@@ -6,25 +6,31 @@
 </head>
 <body>
 
-<h1 id="title">Login</h1>
+<div class="container">
+  <h1 id="title">Login</h1>
 
-<input id="user" placeholder="usuário">
-<input id="pass" type="password" placeholder="senha">
+  <input id="user" placeholder="usuário">
+  <input id="pass" type="password" placeholder="senha">
 
-<button onclick="handleAuth()" id="btn">Entrar</button>
-<a href="#" onclick="toggleMode()">Criar conta</a>
+  <button onclick="handleAuth()" id="btn">Entrar</button>
+  <a href="#" onclick="toggleMode()">Criar conta</a>
+</div>
 
 <script>
 let mode = "login";
 
 function toggleMode() {
   mode = mode === "login" ? "register" : "login";
+
   document.getElementById("title").innerText =
     mode === "login" ? "Login" : "Criar conta";
+
+  document.getElementById("btn").innerText =
+    mode === "login" ? "Entrar" : "Registrar";
 }
 
-function handleAuth() {
-  alert("funcionando");
+async function handleAuth() {
+  alert("botão funcionando");
 }
 </script>
 
