@@ -2,7 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
-  <title>Fox LT Auth</title>
+  <title>Auth Fox LT</title>
   <link rel="stylesheet" href="../css/style.css">
 </head>
 <body>
@@ -26,8 +26,11 @@ let mode = "login";
 function toggleMode() {
   mode = mode === "login" ? "register" : "login";
 
-  title.innerText = mode === "login" ? "Login" : "Criar conta";
-  btn.innerText = mode === "login" ? "Entrar" : "Registrar";
+  document.getElementById("title").innerText =
+    mode === "login" ? "Login" : "Criar conta";
+
+  document.getElementById("btn").innerText =
+    mode === "login" ? "Entrar" : "Registrar";
 }
 
 async function handleAuth() {
@@ -53,8 +56,6 @@ async function handleAuth() {
 
   if (mode === "login") {
     localStorage.setItem("role", data.role);
-    localStorage.setItem("token", data.token);
-
     window.location.href =
       data.role === "admin" ? "/adminlg" : "/dashboard";
   } else {
