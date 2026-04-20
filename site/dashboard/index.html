@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Fox LT Dashboard</title>
+  <link rel="stylesheet" href="../css/dashboard.css">
+</head>
+<body>
+
+<div class="sidebar">
+  <h2>Fox LT</h2>
+
+  <a href="#">Home</a>
+  <a href="#">Perfil</a>
+  <a href="#">Sistema</a>
+  <a href="#" id="adminPanel" style="display:none;">Admin</a>
+
+  <button onclick="logout()">Sair</button>
+</div>
+
+<div class="main">
+  <h1>Bem-vindo ao Dashboard</h1>
+
+  <div class="card">
+    <h3>Status da conta</h3>
+    <p id="roleText">carregando...</p>
+  </div>
+
+  <div class="card">
+    <h3>Sistema</h3>
+    <p>Fox LT rodando normalmente 🚀</p>
+  </div>
+</div>
+
+<script src="../js/dashboard.js"></script>
+</body>
+</html>
