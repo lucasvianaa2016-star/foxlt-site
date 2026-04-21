@@ -63,9 +63,9 @@ async function handleAuth() {
       return;
     }
 
-    if (mode === "login") {
-      window.location.href =
-        data.role === "admin" ? "/adminlg/" : "/dashboard/";
+if (mode === "login") {
+  window.location.href =
+    data.role === "admin" ? "/dashboard/" : "/home/";
     } else {
       alert("Conta criada");
       toggleMode();
