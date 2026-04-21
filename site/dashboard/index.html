@@ -32,6 +32,46 @@
   </div>
 </div>
 
-<script src="../js/dashboard.js"></script>
+<script>
+async function loadDashboard() {
+  try {
+    const res = await fetch("https://foxlt-site.onrender.com/dashboard-data", {
+      method: "GET",
+      credentials: "include"
+    });
+
+    if (!res.ok) {
+      window.location.href = "/";
+      return;
+    }
+
+    const data = await res.json();
+
+    const role = data.user.role;
+
+    document.getElementById("roleText").innerText =
+      "Cargo: " + role;
+
+    if (role === "admin") {
+      document.getElementById("adminPanel").style.display = "block";
+    }
+
+  } catch (error) {
+    window.location.href = "/";
+  }
+}
+
+async function logout() {
+  await fetch("https://foxlt-site.onrender.com/logout", {
+    method: "POST",
+    credentials: "include"
+  });
+
+  window.location.href = "/";
+}
+
+loadDashboard();
+</script>
+
 </body>
 </html>
