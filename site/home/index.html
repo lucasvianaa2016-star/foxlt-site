@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Fox LT Home</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+
+<div class="container">
+  <h1>Home do Usuário</h1>
+
+  <p id="welcome">Carregando...</p>
+
+  <button onclick="logout()">Sair</button>
+</div>
+
+<script>
+async function loadHome() {
+  try {
+    const res = await fetch("https://foxlt-site.onrender.com/dashboard-data", {
+      credentials: "include"
+    });
+
+    if (!res.ok) {
+      window.location.href = "/";
+      return;
+    }
+
+    const data = await res.json();
+
+    const role = data.user.role;
+
+    if (role !== "member") {
+      window.location.href = "/dashboard/";
+      return;
+    }
+
+    document.getElementById("welcome").innerText =
+      "Bem-vindo, " + data.user.username;
+
+  } catch (err) {
+    window.location.href = "/";
+  }
+}
+
+async function logout() {
+  await fetch("https://foxlt-site.onrender.com/logout", {
+    method: "POST",
+    credentials: "include"
+  });
+
+  window.location.href = "/";
+}
+
+loadHome();
+</script>
+
+</body>
+</html>
