@@ -1,17 +1,9 @@
-const role = localStorage.getItem("role");
-const token = localStorage.getItem("token");
+function toggleAdminMenu() {
+  const submenu = document.getElementById("adminSubmenu");
 
-if (!token) {
-  window.location.href = "/auth/";
-}
-
-document.getElementById("roleText").innerText = role;
-
-if (role === "admin") {
-  document.getElementById("adminPanel").style.display = "block";
-}
-
-function logout() {
-  localStorage.clear();
-  window.location.href = "/auth/";
+  if (submenu.style.display === "block") {
+    submenu.style.display = "none";
+  } else {
+    submenu.style.display = "block";
+  }
 }
