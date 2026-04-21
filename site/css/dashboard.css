@@ -1,34 +1,38 @@
+body {
+  margin: 0;
+  font-family: Arial;
+  background: linear-gradient(135deg, #0f172a, #1e293b);
+  color: white;
+  display: flex;
+}
+
 .sidebar {
-  width: 220px;
+  width: 240px;
   height: 100vh;
-  background: #111;
-  color: white;
-  padding: 15px;
-  position: fixed;
+  background: #111827;
+  padding: 20px;
 }
 
-.sidebar a, .admin-btn {
+.sidebar a {
   display: block;
-  color: white;
   padding: 10px;
+  color: white;
   text-decoration: none;
-  background: none;
-  border: none;
-  width: 100%;
-  text-align: left;
-  cursor: pointer;
+  border-radius: 6px;
 }
 
-.sidebar a:hover, .admin-btn:hover {
-  background: #222;
+.sidebar a:hover {
+  background: #1f2937;
 }
 
-.submenu {
-  display: none;
-  padding-left: 15px;
+.main {
+  flex: 1;
+  padding: 20px;
 }
 
-.submenu a {
-  font-size: 14px;
-  opacity: 0.9;
+.card {
+  background: #1f2937;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 10px;
 }
