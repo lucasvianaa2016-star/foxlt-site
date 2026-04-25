@@ -1,28 +1,45 @@
-<div class="container">
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fox LT - Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-  <h1>🦊 FOX LT</h1>
-  <p id="welcome">Carregando usuário...</p>
+  <main class="container">
 
-  <div class="card">
-    <h3>💰 Money (Survival)</h3>
-    <p id="money">0</p>
-  </div>
+    <header class="topo">
+      <h1>🦊 FOX LT</h1>
+      <p id="welcome">Carregando usuário...</p>
+    </header>
 
-  <div class="card">
-    <h3>🏆 Rankup</h3>
-    <p id="rank">Iniciante</p>
-  </div>
+    <section class="card">
+      <h3>💰 Money (Survival)</h3>
+      <p id="money">0</p>
+    </section>
 
-  <div class="card">
-    <h3>⭐ Pontos</h3>
-    <p id="points">0</p>
-  </div>
+    <section class="card">
+      <h3>🏆 Rankup</h3>
+      <p id="rank">Iniciante</p>
+    </section>
 
-  <div class="card">
-    <h3>🎮 Minecraft</h3>
-    <p id="mcstatus">Não vinculado</p>
-  </div>
+    <section class="card">
+      <h3>⭐ Pontos</h3>
+      <p id="points">0</p>
+    </section>
 
-  <button onclick="logout()">Sair</button>
+    <section class="card">
+      <h3>🎮 Conta Minecraft</h3>
+      <p id="mcstatus">Não vinculada</p>
+    </section>
 
-</div>
+    <footer class="acoes">
+      <button onclick="logout()">Sair</button>
+    </footer>
+
+  </main>
+
+</body>
+</html>
