@@ -171,3 +171,29 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log("Servidor rodando na porta " + PORT);
 });
+
+app.post("/minecraft-link", async (req, res) => {
+
+  const { code, player } = req.body;
+
+  const { data, error } = await supabase
+    .from("link_codes")
+    .select("*")
+    .eq("code", code)
+    .eq("used", false)
+    .single();
+
+  if (error || !data) {
+    return res.json({ ok: false });
+  }
+
+  await supabase
+    .from("link_codes")
+    .update({
+      used: true,
+      minecraft_name: player
+    })
+    .eq("code", code);
+
+  res.json({ ok: true });
+});
