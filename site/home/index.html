@@ -37,7 +37,8 @@
 
   <section class="actions">
 
-    <button onclick="linkMinecraft()">🔗 Linkar Minecraft</button>
+    <button onclick="gerarCodigo()">🔗 Linkar Minecraft</button>
+    <p id="codigoLink"></p> 
 
     <button onclick="dailyReward()">🎁 Recompensa diária</button>
 
@@ -56,8 +57,16 @@
 </main>
 
 <script>
-function linkMinecraft(){
-  alert("Sistema de linkar conta em breve.");
+function gerarCodigo(){
+  let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let codigo = "";
+
+  for(let i = 0; i < 6; i++){
+    codigo += chars[Math.floor(Math.random() * chars.length)];
+  }
+
+  document.getElementById("codigoLink").innerText =
+    "Digite no servidor: /link " + codigo;
 }
 
 function dailyReward(){
