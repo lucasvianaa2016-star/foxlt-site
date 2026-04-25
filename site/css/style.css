@@ -57,3 +57,23 @@ a {
   color: #60a5fa;
   text-decoration: none;
 }
+.card {
+  width: 100%;
+  background: #0f172a;
+  padding: 15px;
+  border-radius: 10px;
+  box-sizing: border-box;
+  border: 1px solid #334155;
+}
+
+.card h3 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+}
+
+.card p {
+  margin: 0;
+  font-size: 24px;
+  font-weight: bold;
+  color: #60a5fa;
+}
