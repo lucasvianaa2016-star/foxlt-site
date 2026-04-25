@@ -3,43 +3,83 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Fox LT - Dashboard</title>
-  <link rel="stylesheet" href="/css/style.css">
+  <title>FOX LT - Dashboard V2</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-  <main class="container">
+<main class="container">
 
-    <header class="topo">
-      <h1>🦊 FOX LT</h1>
-      <p id="welcome">Carregando usuário...</p>
-    </header>
+  <header class="topo">
+    <h1>🦊 FOX LT</h1>
+    <p id="welcome">Bem-vindo, jogador!</p>
+  </header>
 
-    <section class="card">
-      <h3>💰 Money (Survival)</h3>
-      <p id="money">0</p>
-    </section>
+  <section class="card">
+    <h3>💰 Money</h3>
+    <p id="money">0</p>
+  </section>
 
-    <section class="card">
-      <h3>🏆 Rankup</h3>
-      <p id="rank">Iniciante</p>
-    </section>
+  <section class="card">
+    <h3>🏆 Rankup</h3>
+    <p id="rank">Iniciante</p>
+  </section>
 
-    <section class="card">
-      <h3>⭐ Pontos</h3>
-      <p id="points">0</p>
-    </section>
+  <section class="card">
+    <h3>⭐ Pontos</h3>
+    <p id="points">0</p>
+  </section>
 
-    <section class="card">
-      <h3>🎮 Conta Minecraft</h3>
-      <p id="mcstatus">Não vinculada</p>
-    </section>
+  <section class="card">
+    <h3>🎮 Conta Minecraft</h3>
+    <p id="mcstatus">Não vinculada</p>
+  </section>
 
-    <footer class="acoes">
-      <button onclick="logout()">Sair</button>
-    </footer>
+  <section class="actions">
 
-  </main>
+    <button onclick="linkMinecraft()">🔗 Linkar Minecraft</button>
+
+    <button onclick="dailyReward()">🎁 Recompensa diária</button>
+
+    <button onclick="shopVip()">🛒 Loja VIP</button>
+
+    <button onclick="missions()">📜 Missões</button>
+
+    <button onclick="ranking()">🏅 Ranking</button>
+
+    <button onclick="discord()">💬 Discord</button>
+
+    <button onclick="logout()">🚪 Sair</button>
+
+  </section>
+
+</main>
+
+<script>
+function linkMinecraft(){
+  alert("Sistema de linkar conta em breve.");
+}
+
+function dailyReward(){
+  alert("Recompensa diária resgatada!");
+}
+
+function shopVip(){
+  alert("Loja VIP em breve.");
+}
+
+function missions(){
+  alert("Missões em breve.");
+}
+
+function ranking(){
+  alert("Ranking em breve.");
+}
+
+function discord(){
+  window.open("https://discord.gg/", "_blank");
+}
+</script>
 
 </body>
 </html>
