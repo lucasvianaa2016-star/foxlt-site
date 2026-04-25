@@ -18,96 +18,16 @@ app.use(cors({
 app.use(express.json());
 app.use(cookieParser());
 
-// Supabase
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_KEY
 );
 
-// JWT
 const JWT_SECRET = process.env.JWT_SECRET || "FOXLT_HIPER_SECRETO";
 
-// =======================
-// REGISTER
-// =======================
-app.post("/register", async (req, res) => {
-  const { username, password } = req.body;
-
-  if (!username || !password) {
-    return res.status(400).json({ error: "Preencha usuário e senha" });
-  }
-
-  const { data: existing } = await supabase
-    .from("users")
-    .select("id")
-    .eq("username", username)
-    .maybeSingle();
-
-  if (existing) {
-    return res.status(400).json({ error: "Usuário já existe" });
-  }
-
-  const { error } = await supabase
-    .from("users")
-    .insert([
-      {
-        username,
-        password,
-        role: "member",
-        money: 0,
-        rank: "A",
-        points: 0
-      }
-    ]);
-
-  if (error) return res.status(400).json({ error: error.message });
-
-  res.json({ ok: true });
-});
-
-// =======================
-// LOGIN
-// =======================
-app.post("/login", async (req, res) => {
-  const { username, password } = req.body;
-
-  const { data } = await supabase
-    .from("users")
-    .select("*")
-    .eq("username", username)
-    .eq("password", password)
-    .maybeSingle();
-
-  if (!data) {
-    return res.status(401).json({ error: "Login inválido" });
-  }
-
-  const token = jwt.sign(
-    {
-      id: data.id,
-      username: data.username,
-      role: data.role
-    },
-    JWT_SECRET,
-    { expiresIn: "1d" }
-  );
-
-  res.cookie("session", token, {
-    httpOnly: true,
-    secure: true,
-    sameSite: "none",
-    maxAge: 86400000
-  });
-
-  res.json({
-    ok: true,
-    role: data.role
-  });
-});
-
-// =======================
-// AUTH MIDDLEWARE
-// =======================
+/* =======================
+AUTH
+======================= */
 function auth(req, res, next) {
   const token = req.cookies.session;
 
@@ -123,9 +43,74 @@ function auth(req, res, next) {
   }
 }
 
-// =======================
-// DASHBOARD DATA
-// =======================
+/* =======================
+REGISTER
+======================= */
+app.post("/register", async (req, res) => {
+  const { username, password } = req.body;
+
+  const { data: existing } = await supabase
+    .from("users")
+    .select("id")
+    .eq("username", username)
+    .maybeSingle();
+
+  if (existing) {
+    return res.status(400).json({ error: "Usuário já existe" });
+  }
+
+  const { error } = await supabase
+    .from("users")
+    .insert([{
+      username,
+      password,
+      role: "member",
+      money: 0,
+      rank: "A",
+      points: 0
+    }]);
+
+  if (error) return res.status(400).json({ error: error.message });
+
+  res.json({ ok: true });
+});
+
+/* =======================
+LOGIN
+======================= */
+app.post("/login", async (req, res) => {
+  const { username, password } = req.body;
+
+  const { data } = await supabase
+    .from("users")
+    .select("*")
+    .eq("username", username)
+    .eq("password", password)
+    .maybeSingle();
+
+  if (!data) {
+    return res.status(401).json({ error: "Login inválido" });
+  }
+
+  const token = jwt.sign({
+    id: data.id,
+    username: data.username,
+    role: data.role
+  }, JWT_SECRET, { expiresIn: "1d" });
+
+  res.cookie("session", token, {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    maxAge: 86400000
+  });
+
+  res.json({ ok: true, role: data.role });
+});
+
+/* =======================
+DASHBOARD
+======================= */
 app.get("/dashboard-data", auth, (req, res) => {
   res.json({
     ok: true,
@@ -133,81 +118,54 @@ app.get("/dashboard-data", auth, (req, res) => {
   });
 });
 
-// =======================
-// ADMIN - LIST USERS
-// =======================
-app.get("/admin/users", auth, async (req, res) => {
-  if (req.user.role !== "admin" && req.user.role !== "owner") {
-    return res.status(403).json({ error: "Acesso negado" });
+/* =======================
+CRIAR CODIGO LINK
+======================= */
+app.post("/create-link-code", auth, async (req, res) => {
+
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+  let code = "";
+
+  for (let i = 0; i < 6; i++) {
+    code += chars[Math.floor(Math.random() * chars.length)];
   }
-
-  const { data, error } = await supabase
-    .from("users")
-    .select("id, username, role, money, rank, points, created_at");
-
-  if (error) return res.status(400).json(error);
-
-  res.json(data);
-});
-
-// =======================
-// OWNER - UPDATE ROLE
-// =======================
-app.post("/admin/update-role", auth, async (req, res) => {
-  if (req.user.role !== "owner") {
-    return res.status(403).json({ error: "Somente owner pode mudar roles" });
-  }
-
-  const { username, role } = req.body;
 
   const { error } = await supabase
-    .from("users")
-    .update({ role })
-    .eq("username", username);
+    .from("link_codes")
+    .insert([{
+      user_id: req.user.id,
+      code: code,
+      used: false
+    }]);
 
-  if (error) return res.status(400).json(error);
-
-  res.json({ ok: true });
-});
-
-// =======================
-// ADMIN - UPDATE STATS
-// =======================
-app.post("/admin/update-stats", auth, async (req, res) => {
-  if (req.user.role !== "admin" && req.user.role !== "owner") {
-    return res.status(403).json({ error: "Acesso negado" });
+  if (error) {
+    return res.status(400).json({ error: error.message });
   }
 
-  const { username, money, rank, points } = req.body;
-
-  const { error } = await supabase
-    .from("users")
-    .update({ money, rank, points })
-    .eq("username", username);
-
-  if (error) return res.status(400).json(error);
-
-  res.json({ ok: true });
+  res.json({
+    ok: true,
+    code: code
+  });
 });
 
-// =======================
-// LOGOUT
-// =======================
+/* =======================
+LOGOUT
+======================= */
 app.post("/logout", (req, res) => {
   res.clearCookie("session");
   res.json({ ok: true });
 });
 
-// =======================
-// ROOT
-// =======================
+/* =======================
+ROOT
+======================= */
 app.get("/", (req, res) => {
   res.send("Fox LT Backend Online 🚀");
 });
 
-// =======================
-// START
-// =======================
+/* =======================
+START
+======================= */
 const PORT = process.env.PORT || 3000;
 
 app.listen(PORT, () => {
