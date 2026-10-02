@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcrypt");
 const { createClient } = require("@supabase/supabase-js");
 
 const app = express();
@@ -59,11 +60,13 @@ app.post("/register", async (req, res) => {
     return res.status(400).json({ error: "Usuário já existe" });
   }
 
+  const hashedPassword = await bcrypt.hash(password, 12);
+
   const { error } = await supabase
     .from("users")
     .insert([{
       username,
-      password,
+      password: hashedPassword,
       role: "member",
       money: 0,
       rank: "A",
@@ -85,10 +88,9 @@ app.post("/login", async (req, res) => {
     .from("users")
     .select("*")
     .eq("username", username)
-    .eq("password", password)
     .maybeSingle();
 
-  if (!data) {
+  if (!data || !(await bcrypt.compare(password, data.password))) {
     return res.status(401).json({ error: "Login inválido" });
   }
 
