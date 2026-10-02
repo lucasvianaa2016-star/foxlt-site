@@ -90,7 +90,28 @@ app.post("/login", async (req, res) => {
     .eq("username", username)
     .maybeSingle();
 
-  if (!data || !(await bcrypt.compare(password, data.password))) {
+  const storedPassword = data?.password;
+  const isBcryptHash = typeof storedPassword === "string" &&
+    /^\$2[ab]\$\d{2}\$[./A-Za-z0-9]{53}$/.test(storedPassword);
+  let validPassword = false;
+
+  if (data && isBcryptHash) {
+    validPassword = await bcrypt.compare(password, storedPassword);
+  } else if (data && storedPassword === password) {
+    const hashedPassword = await bcrypt.hash(password, 12);
+    const { error: updateError } = await supabase
+      .from("users")
+      .update({ password: hashedPassword })
+      .eq("id", data.id);
+
+    if (updateError) {
+      return res.status(500).json({ error: "Não foi possível atualizar a senha." });
+    }
+
+    validPassword = true;
+  }
+
+  if (!validPassword) {
     return res.status(401).json({ error: "Login inválido" });
   }
 
