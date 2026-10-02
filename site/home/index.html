@@ -94,6 +94,19 @@ function ranking(){
 function discord(){
   window.open("https://discord.gg/", "_blank");
 }
+
+async function logout() {
+  try {
+    await fetch("https://foxlt-site.onrender.com/logout", {
+      method: "POST",
+      credentials: "include"
+    });
+  } catch (error) {
+    console.error("Erro ao sair:", error);
+  } finally {
+    window.location.href = "/";
+  }
+}
 </script>
 
 </body>
