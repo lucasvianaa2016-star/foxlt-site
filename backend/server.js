@@ -175,7 +175,11 @@ app.post("/create-link-code", auth, async (req, res) => {
 LOGOUT
 ======================= */
 app.post("/logout", (req, res) => {
-  res.clearCookie("session");
+  res.clearCookie("session", {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none"
+  });
   res.json({ ok: true });
 });
 
